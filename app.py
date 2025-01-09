@@ -20,39 +20,9 @@ api = Api(app)
 # api.register_blueprint(ItemBlueprint)
 api.register_blueprint(StoreBlueprint)
 
-@app.get("/stores")
-def get_stores():
-    return { "stores": list(stores.values()) }, 200
-
-@app.get("/stores/<string:store_id>")
-def get_store_by_id(store_id):
-    if store_id not in stores:
-        abort(404, message="Store not found.")
-
-    print(stores)
-
-    return { **stores[store_id] }, 200
-
 @app.get("/items")
 def get_items():
     return { "items": list(items.values()) }, 200
-
-@app.post("/stores")
-def create_store():
-    store_data = request.get_json()
-
-    if ("name" not in store_data):
-        abort(400, "Ensure name is in the request payload.")
-
-    for store in stores.values():
-        if store["name"] == store_data["name"]:
-            abort(403, message="Store already exists")
-
-    store_id = uuid.uuid4().hex
-
-    stores[store_id] = { "id": store_id, **store_data }
-
-    return { "id": store_id, **store_data }, 201
 
 @app.post("/stores/<string:store_id>/items")
 def create_store_item(store_id):
@@ -96,21 +66,6 @@ def delete_item(item_id):
         return {}, 201
     except KeyError:
         return { "message": "Error when deleting the item." }, 500
-    
-# implement delete store endpoint to delete a store and its corresponding items
-@app.delete("/stores/<string:store_id>")
-def delete_store(store_id):
-    try:
-        del stores[store_id]
-
-        store_items = [item for item in items if store_id == item["store_id"]]
-
-        for store_item in store_items:
-            del items[store_item[id]]
-
-        return {}, 200
-    except KeyError:
-        return { "message": "Unable to perform operation." }, 404
 
 # implement endpoint to update an item
 @app.put("/items/<string:item_id>")
@@ -120,15 +75,6 @@ def update_item(item_id):
         items[item_data] |= item_data
     except KeyError:
         return { "message": "Item not found." }, 404
-
-# implement an endpoint to update a store
-@app.put("/store/<string:store_id>")
-def update_store(store_id):
-    store_data = request.get_json()
-    try:
-        stores[store_id] |= store_data
-    except KeyError:
-        return { "message": "Store not found." }, 404
     
 
 # start using variables on postman
