@@ -6,12 +6,12 @@ from db import items, stores
 
 items_blueprint = Blueprint("items", __name__, description="Operations on items")
         
-items_blueprint.route("/items")
+@items_blueprint.route("/items")
 class Items(MethodView):
     def get(self):
         return { "items": list(items.values()) }, 200
 
-items_blueprint.route("/stores/<string:store_id>")
+@items_blueprint.route("/stores/<string:store_id>/items")
 class CreateItem(MethodView):
     def post(self, store_id):
         item_data = request.get_json()
@@ -30,7 +30,7 @@ class CreateItem(MethodView):
 
         return { **items[item_id] }, 201
 
-items_blueprint.route("/stores/<string:store_id>/items/<string:item_id>")
+@items_blueprint.route("/stores/<string:store_id>/items/<string:item_id>")
 class ItemsWithStore(MethodView):
     def get(self, store_id, item_id):
         if store_id != items[item_id]["store_id"]:
@@ -44,9 +44,10 @@ class ItemsWithStore(MethodView):
     def put(self, store_id, item_id):
         try:
             item_data = request.get_json()
+
             item = items[item_id]
 
-            if store_id != item[store_id]["store_id"]:
+            if store_id != item["store_id"]:
                 return { "message": "This item does not belong to this store." }, 403
 
             item |= item_data
