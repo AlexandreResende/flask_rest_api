@@ -4,9 +4,9 @@ from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from db import stores
 
-store_blueprint = Blueprint("stores", __name__, description="Operations on stores")
+stores_blueprint = Blueprint("stores", __name__, description="Operations on stores")
 
-store_blueprint.route("/stores/<string:store_id>")
+stores_blueprint.route("/stores/<string:store_id>")
 class StoresWithId(MethodView):
     def get(self, store_id):
         try:
@@ -30,7 +30,7 @@ class StoresWithId(MethodView):
         except KeyError:
             return { "message": "Store not found." }, 404
         
-store_blueprint.route("/stores")
+stores_blueprint.route("/stores")
 class Stores(MethodView):
     def get():
         return { **stores }, 200
