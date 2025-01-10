@@ -2,7 +2,9 @@ import uuid
 from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint
+
 from db import items, stores
+from schemas import ItemsSchema, ItemUpdateSchema
 
 items_blueprint = Blueprint("items", __name__, description="Operations on items")
         
@@ -13,17 +15,10 @@ class Items(MethodView):
 
 @items_blueprint.route("/stores/<string:store_id>/items")
 class CreateItem(MethodView):
-    def post(self, store_id):
-        item_data = request.get_json()
-
+    @items_blueprint.arguments(ItemsSchema)
+    def post(self, item_data, store_id):
         if store_id not in stores:
             return { "message": "Store not found" }, 404
-        
-        if (
-            "name" not in item_data and not isinstance(item_data["name"], str)
-            or "price" not in item_data and not isinstance(item_data["price"], float)
-        ):
-            return { "message": "Ensure name and price are in the payload with its corresponding types."}, 400
         
         item_id = uuid.uuid4().hex
         items[item_id] = { "id": item_id, "store_id": store_id, **item_data }
@@ -41,7 +36,8 @@ class ItemsWithStore(MethodView):
         except KeyError:
             return { "message": "Item not found" }, 404 
         
-    def put(self, store_id, item_id):
+    @items_blueprint.arguments(ItemUpdateSchema)
+    def put(self, item_data, store_id, item_id):
         try:
             item_data = request.get_json()
 
