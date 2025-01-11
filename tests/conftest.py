@@ -5,6 +5,10 @@ from src.app import create_app
 @pytest.fixture(scope="module")
 def test_app():
     application = create_app()
+
+    application.config["TESTING"] = True
+    application.config["DEBUG"] = True
+
     client = application.test_client()
 
     context = application.test_request_context()
