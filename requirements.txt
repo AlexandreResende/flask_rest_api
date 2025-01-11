@@ -4,3 +4,4 @@ flask-dotenv
 python-dotenv
 pytest
 coverage
+flask-sqlalchemy
