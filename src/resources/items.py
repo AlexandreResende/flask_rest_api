@@ -3,8 +3,8 @@ from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint
 
-from db import items, stores
-from schemas import ItemsSchema, ItemUpdateSchema
+from src.db import items, stores
+from src.schemas import ItemsSchema, ItemUpdateSchema
 
 items_blueprint = Blueprint("items", __name__, description="Operations on items")
         
@@ -28,10 +28,10 @@ class CreateItem(MethodView):
 @items_blueprint.route("/stores/<string:store_id>/items/<string:item_id>")
 class ItemsWithStore(MethodView):
     def get(self, store_id, item_id):
-        if store_id != items[item_id]["store_id"]:
+        try:
+            if store_id != items[item_id]["store_id"]:
                 return { "message": "Operation not allowed." }, 403
         
-        try:
             return { **items[item_id] }, 200
         except KeyError:
             return { "message": "Item not found" }, 404 

@@ -2,3 +2,5 @@ flask
 flask-smorest
 flask-dotenv
 python-dotenv
+pytest
+coverage
