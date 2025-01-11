@@ -6,6 +6,9 @@ class ItemsSchema(Schema):
     price = fields.Float(required=True)
     store_id = fields.Str(dump_only=True)
 
+class GetItemsSchema(Schema):
+    items = fields.List(fields.Nested(ItemsSchema))
+
 class ItemUpdateSchema(Schema):
     name = fields.Str()
     price = fields.Float()
