@@ -1,10 +1,18 @@
 import uuid
-from flask import request
+import logging
+
+from src.db import db
+
+from sqlalchemy.exc import SQLAlchemyError
+
+from flask import request, jsonify
 from flask.views import MethodView
 from flask_smorest import Blueprint
 
-from src.db import items, stores
+from flask_smorest import Api, abort
+
 from src.schemas import ItemsSchema, ItemUpdateSchema, GetItemsSchema
+from src.models import ItemModel
 
 items_blueprint = Blueprint("items", __name__, description="Operations on items")
         
@@ -18,13 +26,17 @@ class Items(MethodView):
 class CreateItem(MethodView):
     @items_blueprint.arguments(ItemsSchema)
     def post(self, item_data, store_id):
-        if store_id not in stores:
-            return { "message": "Store not found" }, 404
-        
-        item_id = uuid.uuid4().hex
-        items[item_id] = { "id": item_id, "store_id": store_id, **item_data }
+        item_data |= { "store_id": uuid.UUID(store_id) }
+        item = ItemModel(**item_data)
 
-        return { **items[item_id] }, 201
+        try:
+            db.session.add(item)
+            db.session.commit()
+        except SQLAlchemyError:
+            logging.exception("message")
+            return { "message": "Failed to persist item" }, 500
+
+        return item_data, 201
 
 @items_blueprint.route("/stores/<string:store_id>/items/<string:item_id>")
 class ItemsWithStore(MethodView):

@@ -1,15 +1,8 @@
-'''
-structure of the data in stores and on items
+from flask_sqlalchemy import SQLAlchemy
 
-stores = {
-    uuidv4: { id, name: store_name }
-}
+def create_db():
+    db = SQLAlchemy()
 
-items = {
-    uuidv4 = { store_id, name, price }
-}
-'''
+    return db
 
-stores = {}
-
-items = {}
+db = create_db()

@@ -1,12 +1,13 @@
 import uuid
 from flask import request
 from flask.views import MethodView
-from flask_smorest import Blueprint, abort
-from src.db import stores
+from flask_smorest import Blueprint
 from src.schemas import StoreSchema
+from src.models import StoreModel
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from src.db import db
 
 stores_blueprint = Blueprint("stores", __name__, description="Operations on stores")
-
 
 @stores_blueprint.route("/stores")
 class Stores(MethodView):
@@ -15,14 +16,17 @@ class Stores(MethodView):
     
     @stores_blueprint.arguments(StoreSchema)
     def post(self, store_data):
-        for store in stores.values():
-            if store["name"] == store_data["name"]:
-                return { "message": "Store already exists" }, 403
+        store = StoreModel(**store_data)
+        
+        try:
+            db.session.add(store)
+            db.session.commit()
+        except IntegrityError:
+            return { "message": "Store already exists" }, 403
+        except SQLAlchemyError:
+            return { "message": "An error occurred when persisting a store" }, 500
+        return store_data, 201
 
-        store_id = uuid.uuid4().hex
-        stores[store_id] = { "id": store_id, **store_data }
-
-        return { **stores[store_id] }, 201
 
 @stores_blueprint.route("/stores/<string:store_id>")
 class StoresWithId(MethodView):
