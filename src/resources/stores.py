@@ -25,7 +25,7 @@ class Stores(MethodView):
             return { "message": "Store already exists" }, 403
         except SQLAlchemyError:
             return { "message": "An error occurred when persisting a store" }, 500
-        return store_data, 201
+        return store.json(), 201
 
 
 @stores_blueprint.route("/stores/<string:store_id>")

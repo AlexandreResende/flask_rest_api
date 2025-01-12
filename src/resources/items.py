@@ -36,7 +36,7 @@ class CreateItem(MethodView):
             logging.exception("message")
             return { "message": "Failed to persist item" }, 500
 
-        return item_data, 201
+        return item.json(), 201
 
 @items_blueprint.route("/stores/<string:store_id>/items/<string:item_id>")
 class ItemsWithStore(MethodView):

@@ -14,3 +14,11 @@ class ItemModel(db.Model):
     store_id = Column(UUID(as_uuid=True), unique=False, nullable=False)
     # store_id = Column(UUID(as_uuid=True), db.ForeignKey("stores.id"), unique=False, nullable=False)
     # store = relationship("StoreModel", back_populates="items")
+
+    def json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "price": self.price,
+            "store_id": self.store_id
+        }
