@@ -71,12 +71,15 @@ class ItemsWithStore(MethodView):
             return { "message": "Item not found" }, 404
         
     def delete(self, store_id, item_id):
-        try:
-            if store_id != items[item_id]["store_id"]:
-                return { "message": "Operation not allowed." }, 403
+        item = ItemModel.query.get(uuid.UUID(item_id))
 
-            del items[item_id]
+        if not item:
+            return { "message": "Item not found." }, 404
 
-            return {}, 200
-        except KeyError:
-            return { "message": "Item not found" }, 404
+        if uuid.UUID(store_id) != item.json()["store_id"]:
+            return { "message": "Item does not belong to store" }, 403
+
+        db.session.delete(item)
+        db.session.commit()
+
+        return { "message": "Item deleted" }, 200
