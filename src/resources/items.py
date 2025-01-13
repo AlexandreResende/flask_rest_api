@@ -55,20 +55,23 @@ class ItemsWithStore(MethodView):
     @items_blueprint.arguments(ItemUpdateSchema)
     @items_blueprint.response(200, ItemsSchema)
     def put(self, item_data, store_id, item_id):
-        try:
-            item_data = request.get_json()
+        item = ItemModel().query.get(uuid.UUID(item_id))
 
-            item = items[item_id]
-
-            if store_id != item["store_id"]:
-                return { "message": "This item does not belong to this store." }, 403
-
-            item |= item_data
-
-            return { **item }, 200
-
-        except KeyError:
+        if not item:
             return { "message": "Item not found" }, 404
+        
+        if uuid.UUID(store_id) != item.json()["store_id"]:
+            return { "message": "This item does not belong to this store." }, 403
+
+        if "name" in item_data.keys():
+            item.name = item_data["name"]
+        if "price" in item_data.keys():
+            item.price = item_data["price"]
+
+        db.session.add(item)
+        db.session.commit()
+
+        return item.json(), 200
         
     def delete(self, store_id, item_id):
         item = ItemModel.query.get(uuid.UUID(item_id))
