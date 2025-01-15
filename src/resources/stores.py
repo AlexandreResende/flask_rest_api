@@ -33,10 +33,12 @@ class Stores(MethodView):
 @stores_blueprint.route("/stores/<string:store_id>")
 class StoresWithId(MethodView):
     def get(self, store_id):
-        try:
-            return { **stores[store_id] }, 200
-        except KeyError:
-            return { "message": "Store not found." }, 404
+        store = StoreModel.query.get(uuid.UUID(store_id))
+
+        if not store:
+            return { "message": "Store not found" }, 404
+        
+        return store.json(), 200
         
     def put(self, store_id):
         try:
