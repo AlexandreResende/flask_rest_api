@@ -45,13 +45,10 @@ class CreateItem(MethodView):
 class ItemsWithStore(MethodView):
     @items_blueprint.response(200, ItemsSchema)
     def get(self, store_id, item_id):
-        item = ItemModel.query.get(uuid.UUID(item_id))
+        item = ItemModel.query.filter_by(id=uuid.UUID(item_id), store_id=uuid.UUID(store_id)).first()
 
         if not item:
             return { "message": "Item not found" }, 404
-        
-        if uuid.UUID(store_id) != item.json()["store_id"]:
-            return { "message": "Item does not belong to this store" }, 403
         
         return item, 200
         
