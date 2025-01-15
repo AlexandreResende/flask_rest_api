@@ -1,15 +1,15 @@
-list images
+## This is the application developed during this [course](https://www.udemy.com/course/rest-api-flask-and-python).
 
-docker image list
+#### docker commands
 
-build container
+- list images
+    - docker image list
 
-docker build -t flask_course_rest_api .
+- build container
+    - docker build -t flask_course_rest_api .
 
-run container
+- run container
+    - docker run -p 5000:5000 flask_course_rest_api
 
-docker run -p 5000:5000 flask_course_rest_api
-
-run container with volume for fast reloading
-
-docker run -dp 5000:5000 -w /app -v "$(pwd):/app" flask_course_rest_api
+- run container with volume for fast reloading
+    - docker run -dp 5000:5000 -w /app -v "$(pwd):/app" flask_course_rest_api
