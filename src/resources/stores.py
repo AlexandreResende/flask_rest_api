@@ -12,7 +12,9 @@ stores_blueprint = Blueprint("stores", __name__, description="Operations on stor
 @stores_blueprint.route("/stores")
 class Stores(MethodView):
     def get(self):
-        return { "stores": list(stores.values()) }, 200
+        stores = StoreModel.query.all()
+        store_json = [store.json() for store in stores]
+        return { "stores": store_json }, 200
     
     @stores_blueprint.arguments(StoreSchema)
     def post(self, store_data):
