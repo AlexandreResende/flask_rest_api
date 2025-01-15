@@ -20,7 +20,10 @@ items_blueprint = Blueprint("items", __name__, description="Operations on items"
 class Items(MethodView):
     @items_blueprint.response(200, GetItemsSchema)
     def get(self):
-        return { "items": list(items.values()) }, 200
+        items = ItemModel.query.all()
+        items_json = [item.json() for item in items] 
+
+        return { "items": items_json }, 200
 
 @items_blueprint.route("/stores/<string:store_id>/items")
 class CreateItem(MethodView):
