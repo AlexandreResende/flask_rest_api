@@ -51,7 +51,12 @@ class StoresWithId(MethodView):
             return { "message": "Store not found." }, 404 
 
     def delete(self, store_id):
-        try:
-            return {}, 200
-        except KeyError:
+        store = StoreModel.query.get(uuid.UUID(store_id))
+
+        if not store:
             return { "message": "Store not found." }, 404
+
+        db.session.delete(store)
+        db.session.commit()
+        
+        return {}, 200
