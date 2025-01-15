@@ -16,3 +16,6 @@ class ItemUpdateSchema(Schema):
 class StoreSchema(Schema):
     id = fields.Str(dump_only=True)
     name = fields.Str(required=True)
+
+class StoreUpdateSchema(Schema):
+    name = fields.Str(required=True)

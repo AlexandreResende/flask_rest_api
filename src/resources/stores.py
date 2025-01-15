@@ -2,7 +2,7 @@ import uuid
 from flask import request
 from flask.views import MethodView
 from flask_smorest import Blueprint
-from src.schemas import StoreSchema
+from src.schemas import StoreSchema, StoreUpdateSchema
 from src.models import StoreModel
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from src.db import db
@@ -40,15 +40,19 @@ class StoresWithId(MethodView):
         
         return store.json(), 200
         
-    def put(self, store_id):
-        try:
-            store_data = request.get_json()
+    @stores_blueprint.arguments(StoreUpdateSchema)
+    def put(self, store_data, store_id):
+        store = StoreModel.query.get(uuid.UUID(store_id))
 
-            stores[store_id] |= store_data
-
-            return {}, 200
-        except KeyError:
+        if not store:
             return { "message": "Store not found." }, 404 
+        
+        store.name = store_data["name"]
+
+        db.session.add(store)
+        db.session.commit()
+
+        return store.json(), 200
 
     def delete(self, store_id):
         store = StoreModel.query.get(uuid.UUID(store_id))
