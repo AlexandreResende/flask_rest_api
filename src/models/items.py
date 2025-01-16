@@ -12,10 +12,11 @@ class ItemModel(db.Model):
     name = Column(String(150), unique=False, nullable=False)
     price = Column(Float(precision=2), unique=False, nullable=False)
     store_id = Column(UUID(as_uuid=True), unique=False, nullable=False)
-    # store_id = Column(UUID(as_uuid=True), db.ForeignKey("stores.id"), unique=False, nullable=False)
-    # store = relationship("StoreModel", back_populates="items")
+    store_id = Column(UUID(as_uuid=True), ForeignKey("stores.id"), unique=False, nullable=False)
+    store = relationship("StoreModel", back_populates="items")
 
     def json(self):
+        print(self.store)
         return {
             "id": self.id,
             "name": self.name,

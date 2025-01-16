@@ -9,7 +9,7 @@ class StoreModel(db.Model):
 
     id = Column(UUID(), primary_key=True, default=uuid.uuid4)
     name = Column(String(150), unique=True, nullable=False)
-    # items = relationship("ItemModel", back_populates="store", lazy="dynamic")
+    items = relationship("ItemModel", back_populates="store", lazy="dynamic", cascade="all, delete")
 
     def json(self):
-        return { "id": self.id, "name": self.name }
+        return { "id": self.id, "name": self.name, "items": [item.json() for item in self.items] }
