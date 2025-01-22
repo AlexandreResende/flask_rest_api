@@ -1,5 +1,9 @@
 ## This is the application developed during this [course](https://www.udemy.com/course/rest-api-flask-and-python).
 
+#### running the application locally
+
+- flask run
+
 #### docker commands
 
 - list images
