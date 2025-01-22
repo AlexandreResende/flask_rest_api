@@ -11,7 +11,7 @@ class ItemModel(db.Model):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(150), unique=False, nullable=False)
     price = Column(Float(precision=2), unique=False, nullable=False)
-    store_id = Column(UUID(as_uuid=True), unique=False, nullable=False)
+    # store_id = Column(UUID(as_uuid=True), unique=False, nullable=False)
     store_id = Column(UUID(as_uuid=True), ForeignKey("stores.id"), unique=False, nullable=False)
     store = relationship("StoreModel", back_populates="items")
 

@@ -8,6 +8,7 @@ from flask_smorest import Api, abort
 
 from src.resources.stores import stores_blueprint as StoresBlueprint
 from src.resources.items import items_blueprint as ItemsBlueprint
+from src.resources.tags import tags_blueprint as TagsBlueprint
 
 def create_app(db_url=None):
 
@@ -30,5 +31,6 @@ def create_app(db_url=None):
 
     app.register_blueprint(ItemsBlueprint)
     app.register_blueprint(StoresBlueprint)
+    app.register_blueprint(TagsBlueprint)
 
     return app
