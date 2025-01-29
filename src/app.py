@@ -1,10 +1,8 @@
 import os
 from flask import Flask
+from flask_jwt_extended import JWTManager
 
 from src.db import db
-import src.models
-
-from flask_smorest import Api, abort
 
 from src.resources.stores import stores_blueprint as StoresBlueprint
 from src.resources.items import items_blueprint as ItemsBlueprint
@@ -25,6 +23,9 @@ def create_app(db_url=None):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     db.init_app(app)
+
+    app.config["JWT_SECRET_KEY"] = "some_secret_key_here"
+    jwt = JWTManager(app)
 
     with app.app_context():
         db.create_all()
