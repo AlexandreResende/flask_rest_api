@@ -7,6 +7,7 @@ from src.models import UserModel
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from src.db import db
 from passlib.hash import pbkdf2_sha256
+from flask_jwt_extended import create_access_token
 
 users_blueprint = Blueprint("users", __name__, description="Operation on users")
 
@@ -52,5 +53,18 @@ class OperationOnUsers(MethodView):
 
 @users_blueprint.route("/users/login")
 class UsersLogin(MethodView):
+  @users_blueprint.arguments(UserSchema)
   def post(self, user_data):
-    pass
+    user = UserModel.query.filter(
+      UserModel.username == user_data["username"],
+    ).first()
+
+    if not user:
+      return {}, 404
+    
+    if pbkdf2_sha256.verify(user_data["password"], user.password):
+      access_token = create_access_token(identity=user.id)
+
+      return { "access_token": access_token }, 200
+    
+    return {}, 401
